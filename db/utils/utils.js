@@ -1,4 +1,6 @@
-exports.formatDates = list => {};
+exports.formatDates = listArr => {
+  return [];
+};
 
 exports.makeRefObj = list => {};
 
