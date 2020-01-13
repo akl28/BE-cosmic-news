@@ -8,7 +8,11 @@
     "seed": "knex seed:run",
     "test-utils": "mocha spec/utils.spec.js",
     "test": "mocha spec/app.spec.js",
-    "migrate-make": "knex migrate:make"
+    "migrate-make": "knex migrate:make",
+    "migrate-latest": "knex migrate:latest",
+    "migrate-rollback": "knex migrate:rollback",
+    "test-migrate-latest": "NODE_ENV=test knex migrate:latest",
+    "test-migrate-rollback": "NODE_ENV=test knex migrate:rollback"
   },
   "repository": {
     "type": "git",

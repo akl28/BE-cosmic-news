@@ -3,13 +3,20 @@ const {
   articleData,
   commentData,
   userData
-} = require('../data/index.js');
+} = require("../data/index.js");
 
-const { formatDates, formatComments, makeRefObj } = require('../utils/utils');
+// insert data into tables here
+// making changes to data here
+
+const { formatDates, formatComments, makeRefObj } = require("../utils/utils");
 
 exports.seed = function(knex) {
-  const topicsInsertions = knex('topics').insert(topicData);
-  const usersInsertions = knex('users').insert(userData);
+  const topicsInsertions = knex("topics")
+    .insert(topicData)
+    .returning("*");
+  const usersInsertions = knex("users")
+    .insert(userData)
+    .returning("*");
 
   return Promise.all([topicsInsertions, usersInsertions])
     .then(() => {
@@ -34,6 +41,6 @@ exports.seed = function(knex) {
 
       const articleRef = makeRefObj(articleRows);
       const formattedComments = formatComments(commentData, articleRef);
-      return knex('comments').insert(formattedComments);
+      return knex("comments").insert(formattedComments);
     });
 };
