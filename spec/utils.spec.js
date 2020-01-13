@@ -12,7 +12,22 @@ describe("formatDates", () => {
     const expected = [];
     expect(actual).to.eql(expected);
   });
-  it("take an array of one object and returns a new array with all object inside unchanged", () => {
+  it("takes an array of one timestamp object and returns a new array with the date formatted", () => {
+    const input = [
+      {
+        created_at: 1542284514171
+      }
+    ];
+    const actual = formatDates(input);
+    const expected = [
+      {
+        created_at: new Date(1542284514171)
+        // "created_at": "2018-11-15T12:21:54.171Z"
+      }
+    ];
+    expect(actual).to.eql(expected);
+  });
+  it("takes an array of an object with multiple key/value pairs and returns a new array with the date formatted", () => {
     const input = [
       {
         title: "Living in the shadow of a great man",
@@ -24,8 +39,89 @@ describe("formatDates", () => {
       }
     ];
     const actual = formatDates(input);
-    const expected = [];
+    const expected = [
+      {
+        title: "Living in the shadow of a great man",
+        topic: "mitch",
+        author: "butter_bridge",
+        body: "I find this existence challenging",
+        created_at: new Date(1542284514171),
+        votes: 100
+      }
+    ];
     expect(actual).to.eql(expected);
+  });
+  it("takes an array of multiple objects and returns a new array with date formatted", () => {
+    const input = [
+      {
+        title: "UNCOVERED: catspiracy to bring down democracy",
+        topic: "cats",
+        author: "rogersop",
+        body: "Bastet walks amongst us, and the cats are taking arms!",
+        created_at: 1037708514171
+      },
+      {
+        title: "A",
+        topic: "mitch",
+        author: "icellusedkars",
+        body: "Delicious tin of cat food",
+        created_at: 911564514171
+      },
+      {
+        title: "Z",
+        topic: "mitch",
+        author: "icellusedkars",
+        body: "I was hungry.",
+        created_at: 785420514171
+      }
+    ];
+    const actual = formatDates(input);
+    const expected = [
+      {
+        title: "UNCOVERED: catspiracy to bring down democracy",
+        topic: "cats",
+        author: "rogersop",
+        body: "Bastet walks amongst us, and the cats are taking arms!",
+        created_at: new Date(1037708514171)
+      },
+      {
+        title: "A",
+        topic: "mitch",
+        author: "icellusedkars",
+        body: "Delicious tin of cat food",
+        created_at: new Date(911564514171)
+      },
+      {
+        title: "Z",
+        topic: "mitch",
+        author: "icellusedkars",
+        body: "I was hungry.",
+        created_at: new Date(785420514171)
+      }
+    ];
+    expect(actual).to.eql(expected);
+  });
+  it("does not mutate the input array", () => {
+    const input = [
+      {
+        title: "Z",
+        topic: "mitch",
+        author: "icellusedkars",
+        body: "I was hungry.",
+        created_at: 785420514171
+      }
+    ];
+    const input2 = [
+      {
+        title: "Z",
+        topic: "mitch",
+        author: "icellusedkars",
+        body: "I was hungry.",
+        created_at: 785420514171
+      }
+    ];
+    formatDates(input);
+    expect(input).to.eql(input2);
   });
 });
 
