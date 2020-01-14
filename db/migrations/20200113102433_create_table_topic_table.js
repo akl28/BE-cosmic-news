@@ -1,7 +1,7 @@
 // const knex = require("knex");
 
 exports.up = function(knex) {
-  console.log("up function has been called");
+  // console.log("up function has been called");
   // make topics table
   return knex.schema.createTable("topics", topicsTable => {
     topicsTable
@@ -15,7 +15,7 @@ exports.up = function(knex) {
 
 exports.down = function(knex) {
   // drop topics table
-  console.log("calling the down function");
+  // console.log("calling the down function");
   return knex.schema.dropTable("topics");
 };
 
