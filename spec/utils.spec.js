@@ -125,6 +125,82 @@ describe("formatDates", () => {
   });
 });
 
-describe("makeRefObj", () => {});
+// utils function 2
+describe("makeRefObj", () => {
+  it("returns an empty object when passed an empty array", () => {
+    const input = [];
+    const actual = makeRefObj(input);
+    const expected = {};
+    expect(actual).to.eql(expected);
+  });
+  it("takes an array of one object and returns an object with title value as the key and article_id value as the value", () => {
+    const input = [{ article_id: 1, title: "A" }];
+    const actual = makeRefObj(input);
+    const expected = { A: 1 };
+    expect(actual).to.eql(expected);
+  });
+  it("takes an array of multiple objects and returns an object with new format", () => {
+    const input = [
+      { article_id: 1, title: "A" },
+      { article_id: 2, title: "B" }
+    ];
 
-describe("formatComments", () => {});
+    const actual = makeRefObj(input);
+    const expected = { A: 1, B: 2 };
+    expect(actual).to.eql(expected);
+  });
+  it("does not mutate the input array", () => {
+    const input = [{ article_id: 1, title: "A" }];
+    const input2 = [{ article_id: 1, title: "A" }];
+    makeRefObj(input);
+    expect(input).to.eql(input2);
+  });
+});
+
+// utils function 3
+describe.only("formatComments", () => {
+  it("takes an array and returns an array", () => {
+    const input = [];
+    const refObj = { A: 1 };
+    const actual = formatComments(input, refObj);
+    const expected = [];
+    expect(actual).to.eql(expected);
+  });
+  xit("takes an array of one object and renames the 'created_by' property to an `author` key", () => {
+    const input = [{ created_by: "icellusedkars" }];
+    const refObj = { A: 1 };
+    const actual = formatComments(input, refObj);
+    const expected = [{ author: "icellusedkars" }];
+    expect(actual).to.eql(expected);
+  });
+  it('takes an array of one object and renames the "belongs_to" property to an "article_id" key and `created_by` to `author` and formats the date', () => {
+    const input = [
+      {
+        body: "This morning, I showered for nine minutes.",
+        belongs_to: "Living in the shadow of a great man",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 975242163389
+      }
+    ];
+    const refObj = {
+      "Living in the shadow of a great man": 1,
+      "Eight pug gifs that remind me of mitch": 2,
+      "UNCOVERED: catspiracy to bring down democracy": 4,
+      A: 5,
+      Z: 6
+    };
+    const actual = formatComments(input, refObj);
+    const expected = [
+      {
+        body: "This morning, I showered for nine minutes.",
+        article_id: 1,
+        author: "butter_bridge",
+        votes: 16,
+        created_at: new Date(975242163389)
+      }
+    ];
+    expect(actual).to.eql(expected);
+  });
+  it("takes an array of multiple objects and ", () => {});
+});
