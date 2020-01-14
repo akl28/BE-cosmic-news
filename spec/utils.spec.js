@@ -166,13 +166,6 @@ describe.only("formatComments", () => {
     const expected = [];
     expect(actual).to.eql(expected);
   });
-  xit("takes an array of one object and renames the 'created_by' property to an `author` key", () => {
-    const input = [{ created_by: "icellusedkars" }];
-    const refObj = { A: 1 };
-    const actual = formatComments(input, refObj);
-    const expected = [{ author: "icellusedkars" }];
-    expect(actual).to.eql(expected);
-  });
   it('takes an array of one object and renames the "belongs_to" property to an "article_id" key and `created_by` to `author` and formats the date', () => {
     const input = [
       {
@@ -202,5 +195,69 @@ describe.only("formatComments", () => {
     ];
     expect(actual).to.eql(expected);
   });
-  it("takes an array of multiple objects and ", () => {});
+  it("takes an array of multiple objects and returns an array of objects in correct format", () => {
+    const input = [
+      {
+        body: "This morning, I showered for nine minutes.",
+        belongs_to: "Living in the shadow of a great man",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 975242163389
+      },
+      {
+        body: "I am 100% sure that we're not completely sure.",
+        belongs_to: "UNCOVERED: catspiracy to bring down democracy",
+        created_by: "butter_bridge",
+        votes: 1,
+        created_at: 1069850163389
+      }
+    ];
+    const refObj = {
+      "Living in the shadow of a great man": 1,
+      "Eight pug gifs that remind me of mitch": 2,
+      "UNCOVERED: catspiracy to bring down democracy": 4,
+      A: 5,
+      Z: 6
+    };
+    const actual = formatComments(input, refObj);
+    const expected = [
+      {
+        body: "This morning, I showered for nine minutes.",
+        article_id: 1,
+        author: "butter_bridge",
+        votes: 16,
+        created_at: new Date(975242163389)
+      },
+      {
+        body: "I am 100% sure that we're not completely sure.",
+        article_id: 4,
+        author: "butter_bridge",
+        votes: 1,
+        created_at: new Date(1069850163389)
+      }
+    ];
+    expect(actual).to.eql(expected);
+  });
+  it("does not mutate the input array", () => {
+    const input = [
+      {
+        body: "This morning, I showered for nine minutes.",
+        belongs_to: "Living in the shadow of a great man",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 975242163389
+      }
+    ];
+    const input2 = [
+      {
+        body: "This morning, I showered for nine minutes.",
+        belongs_to: "Living in the shadow of a great man",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 975242163389
+      }
+    ];
+    makeRefObj(input);
+    expect(input).to.eql(input2);
+  });
 });
