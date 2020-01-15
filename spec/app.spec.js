@@ -4,6 +4,7 @@ const { expect } = chai;
 const request = require("supertest");
 const app = require("../app");
 const connection = require("../connection");
+chai.use(require("sams-chai-sorted"));
 
 describe("app", () => {
   beforeEach(() => {
@@ -72,10 +73,6 @@ describe("app", () => {
             .get("/api/articles/1")
             .expect(200)
             .then(response => {
-              // console.log(response.body.article[0], "**");
-              // const { articles } = response.body;
-              //expect(articles).to.have.length(8);
-              //  console.log(response.body, "**");
               expect(response.body.article).to.be.an("array");
               expect(response.body.article[0]).to.eql({
                 article_id: 1,
@@ -198,7 +195,7 @@ describe("app", () => {
             });
         });
       });
-      describe("/comments", () => {
+      describe.only("/comments", () => {
         it("POST: 201 posts a new comment to an article", () => {
           return request(app)
             .post("/api/articles/1/comments")
@@ -247,7 +244,7 @@ describe("app", () => {
               );
             });
         });
-        it.only("GET: 200 responds with an array of comments given the article_id", () => {
+        it("GET: 200 responds with an array of comments given the article_id", () => {
           return request(app)
             .get("/api/articles/9/comments")
             .expect(200)
@@ -263,6 +260,86 @@ describe("app", () => {
               );
             });
         });
+        it("GET: 200 responds with an array of comments sorted by votes when passed a query in default descending order", () => {
+          return request(app)
+            .get("/api/articles/1/comments?sort_by=votes")
+            .expect(200)
+            .then(response => {
+              // console.log(response.body.comments);
+              expect(response.body.comments).to.be.an("array");
+              expect(response.body.comments).to.be.sortedBy("votes", {
+                descending: true
+              });
+            });
+        });
+        it("GET: 200 responds with an array of comments in ascending order and sorted by 'created_at' as a default", () => {
+          return request(app)
+            .get("/api/articles/1/comments?order_by=asc")
+            .expect(200)
+            .then(response => {
+              //  console.log(response.body.comments);
+              expect(response.body.comments).to.be.an("array");
+              expect(response.body.comments).to.be.sortedBy("created_at", {
+                descending: false
+              });
+            });
+        });
+        it("GET: 404 sends an error message when given a valid but non-existent article id", () => {
+          return request(app)
+            .get("/api/articles/10000/comments?sort_by=votes")
+            .expect(404)
+            .then(response => {
+              expect(response.body.msg).to.equal("Article ID does not exist");
+            });
+        });
+        it("GET: 400 sends an error message when given an invalid article ID", () => {
+          return request(app)
+            .get("/api/articles/one/comments?sort_by=votes")
+            .expect(400)
+            .then(response => {
+              expect(response.body.msg).to.equal("Bad Request");
+            });
+        });
+        it("GET: 400 sends an error message when given an invalid sort_by", () => {
+          return request(app)
+            .get("/api/articles/one/comments?sort_by=animals")
+            .expect(400)
+            .then(response => {
+              expect(response.body.msg).to.equal(
+                "Bad Request: sort by column does not exist"
+              );
+            });
+        });
+        xit("GET: 200 responds with order in default of descending if passed an invalid order by", () => {
+          return request(app)
+            .get("/api/articles/1/comments?order_by=isc")
+            .expect(200)
+            .then(response => {
+              //  console.log(response.body.comments);
+              expect(response.body.comments).to.be.an("array");
+              expect(response.body.comments).to.be.sortedBy("created_at", {
+                descending: true
+              });
+            });
+        });
+      });
+      it.only("GET: 200 responds with an array of article objects with a comment count property", () => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then(response => {
+            console.log(response.body.articles);
+            expect(response.body.articles).to.be.an("array");
+            expect(response.body.articles[0]).to.have.keys(
+              "author",
+              "title",
+              "article_id",
+              "topic",
+              "created_at",
+              "votes",
+              "comment_count"
+            );
+          });
       });
     });
   });

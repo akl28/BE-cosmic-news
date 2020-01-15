@@ -33,6 +33,7 @@
     "knex": "^0.20.7",
     "mocha": "^7.0.0",
     "pg": "^7.17.1",
+    "sams-chai-sorted": "^1.0.2",
     "supertest": "^4.0.2"
   },
   "devDependencies": {}
