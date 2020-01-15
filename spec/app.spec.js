@@ -310,9 +310,9 @@ describe("app", () => {
               );
             });
         });
-        xit("GET: 200 responds with order in default of descending if passed an invalid order by", () => {
+        it("GET: 200 responds with order in default of descending if passed an invalid order by", () => {
           return request(app)
-            .get("/api/articles/1/comments?order_by=isc")
+            .get("/api/articles/1/comments?order_by=blah")
             .expect(200)
             .then(response => {
               //  console.log(response.body.comments);
@@ -323,7 +323,7 @@ describe("app", () => {
             });
         });
       });
-      it.only("GET: 200 responds with an array of article objects with a comment count property", () => {
+      it("GET: 200 responds with an array of article objects with a comment count property", () => {
         return request(app)
           .get("/api/articles")
           .expect(200)
@@ -341,6 +341,7 @@ describe("app", () => {
             );
           });
       });
+      it("GET: 200 responds with an array of article objects sorted by any valid column", () => {});
     });
   });
 });

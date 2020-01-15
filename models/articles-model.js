@@ -41,10 +41,9 @@ exports.insertComment = (comment, articleID) => {
 };
 
 exports.selectCommentsByArticleID = (articleID, query) => {
-  // if (query.order_by != "asc" || "desc") {
-  //   query.orderby = "desc";
-  // }
-  console.log(query.order_by, "<<<<");
+  if (query.order_by !== "asc" && query.order_by !== "desc") {
+    query.order_by = "desc";
+  }
   return connection
     .select("*")
     .from("comments")
@@ -84,24 +83,3 @@ exports.selectArticles = () => {
       return formattedArticles;
     });
 };
-
-// .select("articles.*")
-//     .from("articles")
-//     .count({ comment_count: "comments.comment_id" })
-//     .leftJoin("comments", "articles.article_id", "=", "comments.article_id")
-//     .groupBy("articles.article_id")
-//     .where("articles.article_id", "=", article_id)
-
-// notes
-//  return connection
-//    .select("articles.*")
-//    .from("articles")
-//    .count({ comment_count: "comments.comment_id" })
-//    .leftJoin("comments", "articles.article_id", "=", "comments.article_id")
-//    .groupBy("articles.article_id")
-//    .where("articles.article_id", "=", article_id)
-//    .then(result => {
-//      if (result.length === 0)
-//        return Promise.reject({ status: 404, msg: "Article does not exist" });
-//      return result;
-//    });
