@@ -198,7 +198,7 @@ describe("app", () => {
             });
         });
       });
-      describe.only("/comments", () => {
+      describe("/comments", () => {
         it("POST: 201 posts a new comment to an article", () => {
           return request(app)
             .post("/api/articles/1/comments")
@@ -244,6 +244,22 @@ describe("app", () => {
               // console.log(response);
               expect(response.body.msg).to.equal(
                 "Bad Request: comment in wrong format"
+              );
+            });
+        });
+        it.only("GET: 200 responds with an array of comments given the article_id", () => {
+          return request(app)
+            .get("/api/articles/9/comments")
+            .expect(200)
+            .then(response => {
+              // console.log(response.body.comments, "**");
+              expect(response.body.comments).to.be.an("array");
+              expect(response.body.comments[0]).to.have.keys(
+                "comment_id",
+                "votes",
+                "created_at",
+                "author",
+                "body"
               );
             });
         });
