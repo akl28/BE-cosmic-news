@@ -195,7 +195,7 @@ describe("app", () => {
             });
         });
       });
-      describe.only("/comments", () => {
+      describe("/comments", () => {
         it("POST: 201 posts a new comment to an article", () => {
           return request(app)
             .post("/api/articles/1/comments")
@@ -300,13 +300,13 @@ describe("app", () => {
               expect(response.body.msg).to.equal("Bad Request");
             });
         });
-        it("GET: 400 sends an error message when given an invalid sort_by", () => {
+        it("GET: 400 sends an error message when given an invalid sort_by column", () => {
           return request(app)
             .get("/api/articles/one/comments?sort_by=animals")
             .expect(400)
             .then(response => {
               expect(response.body.msg).to.equal(
-                "Bad Request: sort by column does not exist"
+                "Bad Request: Sort by column does not exist"
               );
             });
         });
@@ -328,7 +328,7 @@ describe("app", () => {
           .get("/api/articles")
           .expect(200)
           .then(response => {
-            console.log(response.body.articles);
+            //  console.log(response.body.articles);
             expect(response.body.articles).to.be.an("array");
             expect(response.body.articles[0]).to.have.keys(
               "author",
@@ -341,14 +341,197 @@ describe("app", () => {
             );
           });
       });
-      it("GET: 200 responds with an array of article objects sorted by any valid column", () => {});
+      it("GET: 200 responds with an array of article objects and accepts a sort_by query which sorts by column, where the order defaults to descending", () => {
+        return request(app)
+          .get("/api/articles?sort_by=title")
+          .expect(200)
+          .then(response => {
+            expect(response.body.articles).to.be.an("array");
+            expect(response.body.articles).to.be.sortedBy("title", {
+              descending: true
+            });
+          });
+      });
+      it("GET: 200 responds with an array of article objects and accepts an order_by query, which orders ascending & is sorted by date by default", () => {
+        return request(app)
+          .get("/api/articles?order_by=asc")
+          .expect(200)
+          .then(response => {
+            //console.log(response.body, "res bpdy");
+            expect(response.body.articles).to.be.an("array");
+            expect(response.body.articles).to.be.sortedBy("created_at", {
+              descending: false
+            });
+          });
+      });
+      it("GET: 200 responds with an array of article objects from a specific author when passed as a query", () => {
+        return request(app)
+          .get("/api/articles?author=rogersop")
+          .expect(200)
+          .then(response => {
+            // console.log(response.body);
+            expect(response.body.articles[0].author).to.equal("rogersop");
+            expect(
+              response.body.articles.every(
+                article => article.author === "rogersop"
+              )
+            );
+          });
+      });
+      it("GET: 200 responds with an array of article objects with a specific topic when passed as a query", () => {
+        return request(app)
+          .get("/api/articles?topic=cats")
+          .expect(200)
+          .then(response => {
+            expect(response.body.articles[0].topic).to.equal("cats");
+            expect(
+              response.body.articles.every(article => article.topic === "cats")
+            );
+          });
+      });
+      it("GET: 400, sends an error message when given an invalid sort_by column", () => {
+        return request(app)
+          .get("/api/articles?sort_by=colours")
+          .expect(400)
+          .then(response => {
+            expect(response.body.msg).to.equal(
+              "Bad Request: Sort by column does not exist"
+            );
+          });
+      });
+      it("GET: 200 responds with order as a default of descending if passed an invalid order by", () => {
+        return request(app)
+          .get("/api/articles?order_by=upsidedown")
+          .expect(200)
+          .then(response => {
+            //  console.log(response.body.comments);
+            expect(response.body.articles).to.be.an("array");
+            expect(response.body.articles).to.be.sortedBy("created_at", {
+              descending: true
+            });
+          });
+      });
+      it("GET: 404 sends an error message when given a valid but non-existent author", () => {
+        return request(app)
+          .get("/api/articles?author=anna")
+          .expect(404)
+          .then(response => {
+            expect(response.body.msg).to.equal("Does not exist");
+          });
+      });
+      it("GET: 404 sends an error message when given a valid but non-existent topic", () => {
+        return request(app)
+          .get("/api/articles?topic=unknowntopic")
+          .expect(404)
+          .then(response => {
+            expect(response.body.msg).to.equal("Does not exist");
+          });
+      });
+      // ?? should below send an error msg or OK?
+      xit("GET: 200 sends a message when given an author that exists but does not have any articles", () => {});
+    });
+    describe("comments", () => {
+      it("PATCH: 200 increments the comments current vote count given a comment id", () => {
+        return request(app)
+          .patch("/api/comments/3")
+          .expect(200)
+          .send({ inc_votes: 60 }) // << body
+          .then(response => {
+            expect(response.body.comment[0].votes).to.equal(160);
+            expect(response.body).to.eql({
+              comment: [
+                {
+                  comment_id: 3,
+                  author: "icellusedkars",
+                  article_id: 1,
+                  votes: 160,
+                  created_at: "2015-11-23T12:36:03.389Z",
+                  body:
+                    "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works."
+                }
+              ]
+            });
+          });
+      });
+      it("PATCH: 200 decrements the comments current vote count given a comment id", () => {
+        return request(app)
+          .patch("/api/comments/3")
+          .expect(200)
+          .send({ inc_votes: -36 }) // << body
+          .then(response => {
+            expect(response.body.comment[0].votes).to.equal(64);
+            expect(response.body).to.eql({
+              comment: [
+                {
+                  comment_id: 3,
+                  author: "icellusedkars",
+                  article_id: 1,
+                  votes: 64,
+                  created_at: "2015-11-23T12:36:03.389Z",
+                  body:
+                    "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works."
+                }
+              ]
+            });
+          });
+      });
+      it("PATCH: 404 sends an error message when given a valid but non-existent comment_id", () => {
+        return request(app)
+          .patch("/api/comments/1000")
+          .expect(404)
+          .send({ inc_votes: 11 })
+          .then(response => {
+            expect(response.body.msg).to.equal("Comment does not exist");
+          });
+      });
+      it("PATCH: 400 sends an error message when given an invalid comment_id", () => {
+        return request(app)
+          .patch("/api/comments/articlenumber1")
+          .expect(400)
+          .send({ inc_votes: 11 })
+          .then(response => {
+            expect(response.body.msg).to.equal("Bad Request");
+          });
+      });
+      it("PATCH: 400 sends an error message when sending an invlaid body", () => {
+        return request(app)
+          .patch("/api/comments/4")
+          .expect(400)
+          .send({ inc_votes: "seventysixvotes" })
+          .then(response => {
+            expect(response.body.msg).to.equal("Bad Request");
+          });
+      });
+      // should this sent an error or send something else?
+      it("PATCH: 400 sends an error message when sending a missing body", () => {
+        return request(app)
+          .patch("/api/comments/2")
+          .expect(400)
+          .send({})
+          .then(response => {
+            expect(response.body.msg).to.equal("Bad Request");
+          });
+      });
+      it("DELETE: 204 responds with no content and deletes the comment given a comment_id", () => {
+        return request(app)
+          .delete("/api/comments/5")
+          .expect(204);
+      });
+      it("DELETE:404 responds with an appropriate error message when given a non-existent comment id", () => {
+        return request(app)
+          .delete("/api/comments/99999")
+          .expect(404)
+          .then(response => {
+            expect(response.body.msg).to.equal(
+              "Comment does not exist, nothing deleted"
+            );
+          });
+      });
     });
   });
 });
 
 /* Notes
-
-
 // describe("delete", () => {
 //   it("DELETE:  :/id responds with 204 no content", () => {
 //     return (
@@ -369,36 +552,3 @@ describe("app", () => {
 //       .expect(204);
 //   })
 */
-
-// querying
-// test order by query will sort by house name alphabetically
-// api/houses?order_by=animal
-// const houses = {response.body}
-// expect(houses).to.be.sortedBy('animal', {descending: false})
-
-// // controller
-// getHouses => {
-//   selectHouses(req.query.order_by, req.query.animal)
-// }
-
-// //model
-// // takes a parameter
-// // default value = house name
-// exports.selectHouses = ((order_by = 'house_name'), animal) => {
-//   // if animal has a value we want to apply a where clause
-
-//     .modify(function(currentQuery) {
-//       if (animal) currentQuery.where('houses.animal', animal)
-//       if (another thing) {another query onto currentQuery}
-//     })
-
-// }
-// .orderBy('order_by' || 'house_name','asc')
-
-// // ? when hard to put a default value
-// // it get 200 query to bring back houses that only havea a ccertain animal
-// // get.api/houses?animal=badger
-// // when animal/badger is not provided - ignore where statement
-// const { houses} = res.body
-// expect(houses[0].animal).to.equal('badger')
-// expect (houses.every(house => house.animal === 'badger')

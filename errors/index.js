@@ -5,12 +5,12 @@ exports.handleCustomErrors = (err, req, res, next) => {
 };
 
 exports.handlePsqlErrors = (err, req, res, next) => {
-  // console.log(err, "inside psql err handler");
+  // console.log(err, "psql error");
   const psqlErrorCodes = {
     "22P02": { msg: "Bad Request", status: 400 },
     "23502": { msg: "Bad Request: empty body", status: 400 },
     "23503": { msg: "Bad Request: comment in wrong format", status: 400 },
-    "42703": { msg: "Bad Request: sort by column does not exist", status: 400 }
+    "42703": { msg: "Bad Request: Sort by column does not exist", status: 400 }
   };
   if (psqlErrorCodes[err.code])
     res

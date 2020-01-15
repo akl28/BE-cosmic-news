@@ -66,20 +66,40 @@ exports.selectCommentsByArticleID = (articleID, query) => {
     });
 };
 
-exports.selectArticles = () => {
-  return connection
-    .select("articles.*")
-    .from("articles")
-    .count({ comment_count: "comments.comment_id" })
-    .leftJoin("comments", "articles.article_id", "=", "comments.article_id")
-    .groupBy("articles.article_id")
-    .then(articles => {
-      const formattedArticles = [];
-      articles.forEach(article => {
-        const articleCopy = { ...article };
-        formattedArticles.push(articleCopy);
-        delete articleCopy["body"];
-      });
-      return formattedArticles;
-    });
+exports.selectArticles = (orderBy, sortBy, author, topic) => {
+  if (orderBy !== "asc" && orderBy !== "desc") {
+    orderBy = "desc";
+  }
+  return (
+    connection
+      .select("articles.*")
+      .from("articles")
+      .count({ comment_count: "comments.comment_id" })
+      .leftJoin("comments", "articles.article_id", "=", "comments.article_id")
+      .groupBy("articles.article_id")
+      .orderBy(sortBy || "created_at", orderBy || "desc")
+      .modify(function(currentQuery) {
+        if (author) currentQuery.where("articles.author", "=", author);
+        if (topic) currentQuery.where("articles.topic", "=", topic);
+      })
+      //     .modify(function(currentQuery) {
+      //       if (animal) currentQuery.where('houses.animal', animal)
+      //       if (another thing) {another query onto currentQuery}
+      //     })
+      .then(articles => {
+        if (articles.length === 0) {
+          return Promise.reject({
+            status: 404,
+            msg: "Does not exist"
+          });
+        }
+        const formattedArticles = [];
+        articles.forEach(article => {
+          const articleCopy = { ...article };
+          formattedArticles.push(articleCopy);
+          delete articleCopy["body"];
+        });
+        return formattedArticles;
+      })
+  );
 };
