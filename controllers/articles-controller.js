@@ -1,13 +1,14 @@
 const {
   selectArticleByArticleID,
-  updateArticle
+  updateArticle,
+  insertComment
 } = require("../models/articles-model");
 
 exports.getArticleByArticleID = (req, res, next) => {
   // console.log("inside articles controller");
   const { article_id } = req.params;
   selectArticleByArticleID(article_id)
-    .then(([article]) => {
+    .then(article => {
       res.status(200).send({ article });
     })
     .catch(next);
@@ -25,3 +26,16 @@ exports.patchArticle = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.postComment = (req, res, next) => {
+  console.log(req.body);
+  insertComment(req.body).then(comment => {
+    res.status(201).send({ comment });
+  });
+};
+
+// insertTreasure(req.body)
+//   .then(treasure => {
+//     res.status(201).send({ treasure });
+//   })
+//   .catch(next);

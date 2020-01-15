@@ -65,73 +65,162 @@ describe("app", () => {
           });
       });
     });
-    describe.only("/articles", () => {
-      it("GET: 200 responds with an article object with a comment count, given an article_id", () => {
-        return request(app)
-          .get("/api/articles/12")
-          .expect(200)
-          .then(response => {
-            // console.log(response.body, "**");
-            expect(response.body).to.eql({
-              article: {
-                article_id: 12,
-                title: "Moustache",
-                body: "Have you seen the size of that thing?",
-                votes: 0,
-                topic: "mitch",
-                author: "butter_bridge",
-                created_at: "1974-11-26T12:21:54.171Z",
-                comment_count: "0"
-              }
-            });
-
-            expect(response.body.article).to.have.keys(
-              "author",
-              "title",
-              "article_id",
-              "body",
-              "topic",
-              "created_at",
-              "votes",
-              "comment_count"
-            );
-          });
-      });
-      it("GET: 404 sends an error message when given a valid but non-existent article_id", () => {
-        return request(app)
-          .get("/api/articles/1000")
-          .expect(404)
-          .then(response => {
-            expect(response.body.msg).to.equal("Article does not exist");
-          });
-      });
-      it("GET: 400 sends an error message when given an invalid article_id", () => {
-        return request(app)
-          .get("/api/articles/articlenumber1")
-          .expect(400)
-          .then(response => {
-            expect(response.body.msg).to.equal("Bad Request");
-          });
-      });
-      it("PATCH: 200 updates the current article votes given an article id", () => {
-        return request(app)
-          .patch("/api/articles/1")
-          .expect(200)
-          .send({ inc_votes: 22 }) // << body
-          .then(response => {
-            // console.log(response.body.article, "***");
-            expect(response.body.article).to.eql([
-              {
+    describe("/articles", () => {
+      describe("/:article_id", () => {
+        it("GET: 200 responds with an article object with a comment count, given an article_id", () => {
+          return request(app)
+            .get("/api/articles/1")
+            .expect(200)
+            .then(response => {
+              // console.log(response.body.article[0], "**");
+              // const { articles } = response.body;
+              //expect(articles).to.have.length(8);
+              //  console.log(response.body, "**");
+              expect(response.body.article).to.be.an("array");
+              expect(response.body.article[0]).to.eql({
                 article_id: 1,
                 title: "Living in the shadow of a great man",
+                body: "I find this existence challenging",
+                votes: 100,
                 topic: "mitch",
                 author: "butter_bridge",
-                body: "I find this existence challenging",
                 created_at: "2018-11-15T12:21:54.171Z",
-                votes: 122
-              }
-            ]);
-          });
+                comment_count: "13"
+              });
+
+              expect(response.body.article[0]).to.have.keys(
+                "author",
+                "title",
+                "article_id",
+                "body",
+                "topic",
+                "created_at",
+                "votes",
+                "comment_count"
+              );
+            });
+        });
+        it("GET: 404 sends an error message when given a valid but non-existent article_id", () => {
+          return request(app)
+            .get("/api/articles/1000")
+            .expect(404)
+            .then(response => {
+              expect(response.body.msg).to.equal("Article does not exist");
+            });
+        });
+        it("GET: 400 sends an error message when given an invalid article_id", () => {
+          return request(app)
+            .get("/api/articles/articlenumber1")
+            .expect(400)
+            .then(response => {
+              expect(response.body.msg).to.equal("Bad Request");
+            });
+        });
+        it("PATCH: 200 increments the current article votes given an article id", () => {
+          return request(app)
+            .patch("/api/articles/1")
+            .expect(200)
+            .send({ inc_votes: 22 }) // << body
+            .then(response => {
+              // console.log(response.body, "***");
+              expect(response.body).to.eql({
+                article: [
+                  {
+                    article_id: 1,
+                    title: "Living in the shadow of a great man",
+                    topic: "mitch",
+                    author: "butter_bridge",
+                    body: "I find this existence challenging",
+                    created_at: "2018-11-15T12:21:54.171Z",
+                    votes: 122
+                  }
+                ]
+              });
+            });
+        });
+        it("PATCH: 200 decrements the current article votes given an article id", () => {
+          return request(app)
+            .patch("/api/articles/1")
+            .expect(200)
+            .send({ inc_votes: -25 }) // << body
+            .then(response => {
+              // console.log(response.body, "***");
+              expect(response.body).to.eql({
+                article: [
+                  {
+                    article_id: 1,
+                    title: "Living in the shadow of a great man",
+                    topic: "mitch",
+                    author: "butter_bridge",
+                    body: "I find this existence challenging",
+                    created_at: "2018-11-15T12:21:54.171Z",
+                    votes: 75
+                  }
+                ]
+              });
+            });
+        });
+        it("PATCH: 404 sends an error message when given a valid but non-existent article_id", () => {
+          return request(app)
+            .patch("/api/articles/1000")
+            .expect(404)
+            .send({ inc_votes: 22 })
+            .then(response => {
+              expect(response.body.msg).to.equal("Article does not exist");
+            });
+        });
+        it("PATCH: 400 sends an error message when given an invalid article_id", () => {
+          return request(app)
+            .patch("/api/articles/articlenumber1")
+            .expect(400)
+            .send({ inc_votes: 22 })
+            .then(response => {
+              expect(response.body.msg).to.equal("Bad Request");
+            });
+        });
+        it("PATCH: 400 sends an error message when sending an invlaid body", () => {
+          return request(app)
+            .patch("/api/articles/1")
+            .expect(400)
+            .send({ inc_votes: "twentytwovotes" })
+            .then(response => {
+              // console.log(response.body.msg, "***");
+              expect(response.body.msg).to.equal("Bad Request");
+            });
+        });
+        it("PATCH: 400 sends an error message when sending a missing body", () => {
+          return request(app)
+            .patch("/api/articles/1")
+            .expect(400)
+            .send({})
+            .then(response => {
+              // console.log(response.body.msg, "***");
+              expect(response.body.msg).to.equal("Bad Request");
+            });
+        });
+      });
+      describe("/comments", () => {
+        xit("POST: 201 posts a new comment to an article", () => {
+          return request(app)
+            .post("/api/articles/1/comments")
+            .expect(201)
+            .send({
+              username: "anna",
+              body: "The fluffy dog ate the banana"
+            })
+            .then(response => {
+              console.log(response, "** response **");
+              expect(response.body.comment).to.eql({
+                body: "The fluffy dog ate the banana",
+                votes: 0,
+                created_at: "2017-11-22T12:36:03.389Z",
+                author: "anna",
+                article_id: 2
+              });
+            });
+        });
+        // request body accepts a username and body
+        // responds with posted comment
       });
     });
   });
@@ -160,3 +249,36 @@ describe("app", () => {
 //       .expect(204);
 //   })
 */
+
+// querying
+// test order by query will sort by house name alphabetically
+// api/houses?order_by=animal
+// const houses = {response.body}
+// expect(houses).to.be.sortedBy('animal', {descending: false})
+
+// // controller
+// getHouses => {
+//   selectHouses(req.query.order_by, req.query.animal)
+// }
+
+// //model
+// // takes a parameter
+// // default value = house name
+// exports.selectHouses = ((order_by = 'house_name'), animal) => {
+//   // if animal has a value we want to apply a where clause
+
+//     .modify(function(currentQuery) {
+//       if (animal) currentQuery.where('houses.animal', animal)
+//       if (another thing) {another query onto currentQuery}
+//     })
+
+// }
+// .orderBy('order_by' || 'house_name','asc')
+
+// // ? when hard to put a default value
+// // it get 200 query to bring back houses that only havea a ccertain animal
+// // get.api/houses?animal=badger
+// // when animal/badger is not provided - ignore where statement
+// const { houses} = res.body
+// expect(houses[0].animal).to.equal('badger')
+// expect (houses.every(house => house.animal === 'badger')
