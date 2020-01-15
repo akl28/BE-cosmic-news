@@ -194,33 +194,59 @@ describe("app", () => {
             .expect(400)
             .send({})
             .then(response => {
-              // console.log(response.body.msg, "***");
               expect(response.body.msg).to.equal("Bad Request");
             });
         });
       });
-      describe("/comments", () => {
-        xit("POST: 201 posts a new comment to an article", () => {
+      describe.only("/comments", () => {
+        it("POST: 201 posts a new comment to an article", () => {
           return request(app)
             .post("/api/articles/1/comments")
             .expect(201)
             .send({
-              username: "anna",
+              username: "butter_bridge",
               body: "The fluffy dog ate the banana"
             })
             .then(response => {
-              console.log(response, "** response **");
-              expect(response.body.comment).to.eql({
-                body: "The fluffy dog ate the banana",
-                votes: 0,
-                created_at: "2017-11-22T12:36:03.389Z",
-                author: "anna",
-                article_id: 2
-              });
+              expect(response.body.comment[0]).to.have.keys(
+                "body",
+                "votes",
+                "created_at",
+                "author",
+                "article_id",
+                "comment_id"
+              );
+              expect(response.body.comment[0].body).to.equal(
+                "The fluffy dog ate the banana"
+              );
+              expect(response.body.comment[0]["article_id"]).to.equal(1);
+              expect(response.body.comment[0]["author"]).to.equal(
+                "butter_bridge"
+              );
             });
         });
-        // request body accepts a username and body
-        // responds with posted comment
+        it("POST: 400 when empty body is sent as a comment", () => {
+          return request(app)
+            .post("/api/articles/1/comments")
+            .expect(400)
+            .send({})
+            .then(response => {
+              // console.log(response);
+              expect(response.body.msg).to.equal("Bad Request: empty body");
+            });
+        });
+        it("POST: 400 when comment is sent in wrong format", () => {
+          return request(app)
+            .post("/api/articles/1/comments")
+            .expect(400)
+            .send({ username: 28, body: "hi" })
+            .then(response => {
+              // console.log(response);
+              expect(response.body.msg).to.equal(
+                "Bad Request: comment in wrong format"
+              );
+            });
+        });
       });
     });
   });

@@ -30,8 +30,14 @@ exports.updateArticle = (articleID, voteInc) => {
     });
 };
 
-exports.insertComment = () => {
-  console.log("inside model");
+exports.insertComment = (comment, articleID) => {
+  const formattedComment = { ...comment };
+  formattedComment.author = comment.username;
+  formattedComment["article_id"] = articleID;
+  delete formattedComment.username;
+  return connection("comments")
+    .insert(formattedComment)
+    .returning("*");
 };
 
 // count of films  by director

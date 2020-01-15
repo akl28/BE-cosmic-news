@@ -28,10 +28,11 @@ exports.patchArticle = (req, res, next) => {
 };
 
 exports.postComment = (req, res, next) => {
-  console.log(req.body);
-  insertComment(req.body).then(comment => {
-    res.status(201).send({ comment });
-  });
+  insertComment(req.body, req.params.article_id)
+    .then(comment => {
+      res.status(201).send({ comment });
+    })
+    .catch(next);
 };
 
 // insertTreasure(req.body)

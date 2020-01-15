@@ -6,7 +6,11 @@ exports.handleCustomErrors = (err, req, res, next) => {
 
 exports.handlePsqlErrors = (err, req, res, next) => {
   // console.log(err, "inside psql err handler");
-  const psqlErrorCodes = { "22P02": { msg: "Bad Request", status: 400 } };
+  const psqlErrorCodes = {
+    "22P02": { msg: "Bad Request", status: 400 },
+    "23502": { msg: "Bad Request: empty body", status: 400 },
+    "23503": { msg: "Bad Request: comment in wrong format", status: 400 }
+  };
   if (psqlErrorCodes[err.code])
     res
       .status(psqlErrorCodes[err.code].status)
