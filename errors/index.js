@@ -1,11 +1,11 @@
 exports.handleCustomErrors = (err, req, res, next) => {
-  // console.log(err, "inside custom err handler");
+  //console.log(err, "inside custom err handler");
   if (err.status) res.status(err.status).send({ msg: err.msg });
   else next(err);
 };
 
 exports.handlePsqlErrors = (err, req, res, next) => {
-  // console.log(err, "psql error");
+  //console.log(err, "psql error");
   const psqlErrorCodes = {
     "22P02": { msg: "Bad Request", status: 400 },
     "23502": { msg: "Bad Request: empty body", status: 400 },
@@ -20,7 +20,7 @@ exports.handlePsqlErrors = (err, req, res, next) => {
 };
 
 exports.handleServerErrors = (err, req, res, next) => {
-  console.log(err, "inside server err handler");
+  // console.log(err, "inside server err handler");
   res.status(500).send({ msg: "Internal Server Error" });
 };
 
