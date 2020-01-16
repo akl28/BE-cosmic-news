@@ -17,6 +17,12 @@ articlesRouter
   .post(postComment)
   .get(getCommentsByArticleID);
 
-articlesRouter.route("/").get(getArticles);
+articlesRouter
+  .route("/")
+  .get(getArticles)
+  .post(getArticles)
+  .patch(getArticles)
+  .put(getArticles)
+  .delete(getArticles);
 
 module.exports = articlesRouter;

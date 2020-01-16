@@ -1,17 +1,9 @@
 const connection = require("../connection");
 
-exports.selectTopics = () => {
-  // console.log("inside model");
+exports.selectTopics = method => {
+  console.log(method);
+  if (method !== "GET") {
+    return Promise.reject({ status: 405, msg: "Method not valid" });
+  }
   return connection.select("*").from("topics");
 };
-
-// Notes
-// exports.deleteHouse = ({ id }) => {
-//   // sql
-//   connection("houses") // table name
-//     .where("house_id ", id) // column name, condition
-//     .del()
-//     .then(function(deleteCount) {
-//       console.log(mystery);
-//     });
-// };

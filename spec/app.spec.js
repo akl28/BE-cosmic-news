@@ -17,7 +17,6 @@ describe("app", () => {
         .get("/api/notAValidRoute")
         .expect(404)
         .then(response => {
-          // console.log(response);
           expect(response.body.msg).to.equal("Path does not exist");
         });
     });
@@ -32,6 +31,38 @@ describe("app", () => {
             response.body.topics.forEach(topic => {
               expect(topic).to.have.keys("slug", "description");
             });
+          });
+      });
+      it("POST: 405 responds with an error msg when given an inavlid method", () => {
+        return request(app)
+          .post("/api/topics")
+          .expect(405)
+          .then(response => {
+            expect(response.body.msg).to.equal("Method not valid");
+          });
+      });
+      it("PUT: 405 responds with an error msg when given an inavlid method", () => {
+        return request(app)
+          .put("/api/topics")
+          .expect(405)
+          .then(response => {
+            expect(response.body.msg).to.equal("Method not valid");
+          });
+      });
+      it("PATCH: 405 responds with an error msg when given an inavlid method", () => {
+        return request(app)
+          .patch("/api/topics")
+          .expect(405)
+          .then(response => {
+            expect(response.body.msg).to.equal("Method not valid");
+          });
+      });
+      it("DELETE: 405 responds with an error msg when given an inavlid method", () => {
+        return request(app)
+          .delete("/api/topics")
+          .expect(405)
+          .then(response => {
+            expect(response.body.msg).to.equal("Method not valid");
           });
       });
     });
@@ -175,11 +206,11 @@ describe("app", () => {
               expect(response.body.msg).to.equal("Bad Request");
             });
         });
-        it("PATCH: 400 sends an error message when sending an invlaid body", () => {
+        it("PATCH: 400 sends an error message when sending an invalid body", () => {
           return request(app)
             .patch("/api/articles/1")
             .expect(400)
-            .send({ inc_votes: "twentytwovotes" })
+            .send({ inc_votes: "cats" })
             .then(response => {
               // console.log(response.body.msg, "***");
               expect(response.body.msg).to.equal("Bad Request");
@@ -192,6 +223,28 @@ describe("app", () => {
             .send({})
             .then(response => {
               expect(response.body.msg).to.equal("Bad Request");
+            });
+        });
+        it("PATCH: 200 increments the current article votes given a body with other properties on it ", () => {
+          return request(app)
+            .patch("/api/articles/1")
+            .expect(200)
+            .send({ inc_votes: 22, name: "Mitch", blah: "Invalidproperty" })
+            .then(response => {
+              // console.log(response.body, "***");
+              expect(response.body).to.eql({
+                article: [
+                  {
+                    article_id: 1,
+                    title: "Living in the shadow of a great man",
+                    topic: "mitch",
+                    author: "butter_bridge",
+                    body: "I find this existence challenging",
+                    created_at: "2018-11-15T12:21:54.171Z",
+                    votes: 122
+                  }
+                ]
+              });
             });
         });
       });
@@ -323,7 +376,7 @@ describe("app", () => {
             });
         });
       });
-      it("GET: 200 responds with an array of article objects with a comment count property", () => {
+      it.only("GET: 200 responds with an array of article objects with a comment count property", () => {
         return request(app)
           .get("/api/articles")
           .expect(200)
@@ -341,7 +394,39 @@ describe("app", () => {
             );
           });
       });
-      it("GET: 200 responds with an array of article objects and accepts a sort_by query which sorts by column, where the order defaults to descending", () => {
+      it("POST: 405 responds with an error msg when given an inavlid method", () => {
+        return request(app)
+          .post("/api/articles")
+          .expect(405)
+          .then(response => {
+            expect(response.body.msg).to.equal("Method not valid");
+          });
+      });
+      it("PUT: 405 responds with an error msg when given an inavlid method", () => {
+        return request(app)
+          .put("/api/articles")
+          .expect(405)
+          .then(response => {
+            expect(response.body.msg).to.equal("Method not valid");
+          });
+      });
+      it("PATCH: 405 responds with an error msg when given an inavlid method", () => {
+        return request(app)
+          .patch("/api/articles")
+          .expect(405)
+          .then(response => {
+            expect(response.body.msg).to.equal("Method not valid");
+          });
+      });
+      it("DELETE: 405 responds with an error msg when given an inavlid method", () => {
+        return request(app)
+          .delete("/api/articles")
+          .expect(405)
+          .then(response => {
+            expect(response.body.msg).to.equal("Method not valid");
+          });
+      });
+      it.only("GET: 200 responds with an array of article objects and accepts a sort_by query which sorts by column, where the order defaults to descending", () => {
         return request(app)
           .get("/api/articles?sort_by=title")
           .expect(200)
@@ -352,7 +437,7 @@ describe("app", () => {
             });
           });
       });
-      it("GET: 200 responds with an array of article objects and accepts an order_by query, which orders ascending & is sorted by date by default", () => {
+      it.only("GET: 200 responds with an array of article objects and accepts an order_by query, which orders ascending & is sorted by date by default", () => {
         return request(app)
           .get("/api/articles?order_by=asc")
           .expect(200)
@@ -364,7 +449,7 @@ describe("app", () => {
             });
           });
       });
-      it("GET: 200 responds with an array of article objects from a specific author when passed as a query", () => {
+      it.only("GET: 200 responds with an array of article objects from a specific author when passed as a query", () => {
         return request(app)
           .get("/api/articles?author=rogersop")
           .expect(200)
@@ -378,7 +463,7 @@ describe("app", () => {
             );
           });
       });
-      it("GET: 200 responds with an array of article objects with a specific topic when passed as a query", () => {
+      it.only("GET: 200 responds with an array of article objects with a specific topic when passed as a query", () => {
         return request(app)
           .get("/api/articles?topic=cats")
           .expect(200)
@@ -389,7 +474,7 @@ describe("app", () => {
             );
           });
       });
-      it("GET: 400, sends an error message when given an invalid sort_by column", () => {
+      it.only("GET: 400, sends an error message when given an invalid sort_by column", () => {
         return request(app)
           .get("/api/articles?sort_by=colours")
           .expect(400)
@@ -399,7 +484,7 @@ describe("app", () => {
             );
           });
       });
-      it("GET: 200 responds with order as a default of descending if passed an invalid order by", () => {
+      it.only("GET: 200 responds with order as a default of descending if passed an invalid order by", () => {
         return request(app)
           .get("/api/articles?order_by=upsidedown")
           .expect(200)
@@ -411,7 +496,7 @@ describe("app", () => {
             });
           });
       });
-      it("GET: 404 sends an error message when given a valid but non-existent author", () => {
+      it.only("GET: 404 sends an error message when given a valid but non-existent author", () => {
         return request(app)
           .get("/api/articles?author=anna")
           .expect(404)
@@ -419,7 +504,7 @@ describe("app", () => {
             expect(response.body.msg).to.equal("Does not exist");
           });
       });
-      it("GET: 404 sends an error message when given a valid but non-existent topic", () => {
+      it.only("GET: 404 sends an error message when given a valid but non-existent topic", () => {
         return request(app)
           .get("/api/articles?topic=unknowntopic")
           .expect(404)
@@ -427,8 +512,24 @@ describe("app", () => {
             expect(response.body.msg).to.equal("Does not exist");
           });
       });
-      // ?? should below send an error msg or OK?
-      xit("GET: 200 sends a message when given an author that exists but does not have any articles", () => {});
+      it.only("GET: 200 sends an empty array when given an AUTHOR that exists but does not have any articles", () => {
+        return request(app)
+          .get("/api/articles?author=lurker")
+          .expect(200)
+          .then(response => {
+            expect(response.body.articles).to.be.an("array");
+            expect(response.body.articles).to.have.length(0);
+          });
+      });
+      it.only("GET: 200 sends a message when given a TOPIC that exists but does not have any articles", () => {
+        return request(app)
+          .get("/api/articles?topic=paper")
+          .expect(200)
+          .then(response => {
+            expect(response.body.articles).to.be.an("array");
+            expect(response.body.articles).to.have.length(0);
+          });
+      });
     });
     describe("comments", () => {
       it("PATCH: 200 increments the comments current vote count given a comment id", () => {

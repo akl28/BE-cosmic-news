@@ -1,3 +1,5 @@
+const connection = require("../../connection");
+
 exports.formatDates = articleData => {
   const formattedArticles = [];
   articleData.forEach(articleDatum => {
@@ -30,4 +32,18 @@ exports.formatComments = (comments, refObj) => {
     formattedComments.push(commentCopy);
   });
   return formattedComments;
+};
+
+exports.checkExists = (authorORtopic, table, column) => {
+  return connection
+    .select("*")
+    .from(table)
+    .where(column, "=", authorORtopic)
+    .then(result => {
+      if (result.length === 0) {
+        return Promise.reject({ status: 404, msg: "Does not exist" });
+      } else {
+        return [];
+      }
+    });
 };
