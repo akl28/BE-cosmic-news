@@ -421,7 +421,7 @@ describe("app", () => {
           .post("/api/articles")
           .expect(405)
           .then(response => {
-            expect(response.body.msg).to.equal("Method not valid");
+            expect(response.body.msg).to.equal("Method Not Found");
           });
       });
       it("PUT: 405 responds with an error msg when given an inavlid method", () => {
@@ -429,7 +429,7 @@ describe("app", () => {
           .put("/api/articles")
           .expect(405)
           .then(response => {
-            expect(response.body.msg).to.equal("Method not valid");
+            expect(response.body.msg).to.equal("Method Not Found");
           });
       });
       it("PATCH: 405 responds with an error msg when given an inavlid method", () => {
@@ -437,7 +437,7 @@ describe("app", () => {
           .patch("/api/articles")
           .expect(405)
           .then(response => {
-            expect(response.body.msg).to.equal("Method not valid");
+            expect(response.body.msg).to.equal("Method Not Found");
           });
       });
       it("DELETE: 405 responds with an error msg when given an inavlid method", () => {
@@ -445,7 +445,7 @@ describe("app", () => {
           .delete("/api/articles")
           .expect(405)
           .then(response => {
-            expect(response.body.msg).to.equal("Method not valid");
+            expect(response.body.msg).to.equal("Method Not Found");
           });
       });
       it("GET: 200 responds with an array of article objects and accepts a sort_by query which sorts by column, where the order defaults to descending", () => {

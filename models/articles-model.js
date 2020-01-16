@@ -70,10 +70,7 @@ exports.selectCommentsByArticleID = (articleID, query) => {
     });
 };
 
-exports.selectArticles = (orderBy, sortBy, author, topic, method) => {
-  if (method !== "GET") {
-    return Promise.reject({ status: 405, msg: "Method not valid" });
-  }
+exports.selectArticles = (orderBy, sortBy, author, topic) => {
   if (orderBy !== "asc" && orderBy !== "desc") {
     orderBy = "desc";
   }
