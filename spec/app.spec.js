@@ -216,13 +216,25 @@ describe("app", () => {
               expect(response.body.msg).to.equal("Bad Request");
             });
         });
-        it("PATCH: 400 sends an error message when sending a missing body", () => {
+        it("PATCH: 200 sends the original article back when sending a missing body", () => {
           return request(app)
             .patch("/api/articles/1")
-            .expect(400)
+            .expect(200)
             .send({})
             .then(response => {
-              expect(response.body.msg).to.equal("Bad Request");
+              expect(response.body).to.eql({
+                article: [
+                  {
+                    article_id: 1,
+                    title: "Living in the shadow of a great man",
+                    topic: "mitch",
+                    author: "butter_bridge",
+                    body: "I find this existence challenging",
+                    created_at: "2018-11-15T12:21:54.171Z",
+                    votes: 100
+                  }
+                ]
+              });
             });
         });
         it("PATCH: 200 increments the current article votes given a body with other properties on it ", () => {
@@ -602,29 +614,20 @@ describe("app", () => {
             expect(response.body.msg).to.equal("Bad Request");
           });
       });
-      // should this sent an error or send something else?
-      it("PATCH: 400 sends an error message when sending a missing body", () => {
-        return request(app)
-          .patch("/api/comments/2")
-          .expect(400)
-          .send({})
-          .then(response => {
-            expect(response.body.msg).to.equal("Bad Request");
-          });
-      });
-      it("PATCH: 200 increments the current article votes given a body with other properties on it ", () => {
+      it("PATCH: 200 sends the original comment back when sending a missing body", () => {
         return request(app)
           .patch("/api/comments/3")
           .expect(200)
-          .send({ inc_votes: 50, name: "Mitch", blah: "Invalidproperty" })
+          .send({})
           .then(response => {
+            expect(response.body.comment[0].votes).to.equal(100);
             expect(response.body).to.eql({
               comment: [
                 {
                   comment_id: 3,
                   author: "icellusedkars",
                   article_id: 1,
-                  votes: 150,
+                  votes: 100,
                   created_at: "2015-11-23T12:36:03.389Z",
                   body:
                     "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works."
@@ -633,21 +636,42 @@ describe("app", () => {
             });
           });
       });
-      it("DELETE: 204 responds with no content and deletes the comment given a comment_id", () => {
-        return request(app)
-          .delete("/api/comments/5")
-          .expect(204);
-      });
-      it("DELETE:404 responds with an appropriate error message when given a non-existent comment id", () => {
-        return request(app)
-          .delete("/api/comments/99999")
-          .expect(404)
-          .then(response => {
-            expect(response.body.msg).to.equal(
-              "Comment does not exist, nothing deleted"
-            );
+    });
+    it("PATCH: 200 increments the current article votes given a body with other properties on it ", () => {
+      return request(app)
+        .patch("/api/comments/3")
+        .expect(200)
+        .send({ inc_votes: 50, name: "Mitch", blah: "Invalidproperty" })
+        .then(response => {
+          expect(response.body).to.eql({
+            comment: [
+              {
+                comment_id: 3,
+                author: "icellusedkars",
+                article_id: 1,
+                votes: 150,
+                created_at: "2015-11-23T12:36:03.389Z",
+                body:
+                  "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works."
+              }
+            ]
           });
-      });
+        });
+    });
+    it("DELETE: 204 responds with no content and deletes the comment given a comment_id", () => {
+      return request(app)
+        .delete("/api/comments/5")
+        .expect(204);
+    });
+    it("DELETE:404 responds with an appropriate error message when given a non-existent comment id", () => {
+      return request(app)
+        .delete("/api/comments/99999")
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal(
+            "Comment does not exist, nothing deleted"
+          );
+        });
     });
   });
 });

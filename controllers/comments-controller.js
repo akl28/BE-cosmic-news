@@ -3,7 +3,8 @@ const { updateComment, removeComment } = require("../models/comments-model");
 exports.patchComment = (req, res, next) => {
   const { comment_id } = req.params;
   const { inc_votes } = req.body;
-  updateComment(comment_id, inc_votes)
+  const bodyLength = Object.keys(req.body).length;
+  updateComment(comment_id, inc_votes, bodyLength)
     .then(comment => {
       res.status(200).send({ comment });
     })

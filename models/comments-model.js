@@ -1,8 +1,8 @@
 const connection = require("../connection");
 
-exports.updateComment = (commentID, voteInc) => {
-  if (!voteInc) {
-    return Promise.reject({ status: 400, msg: "Bad Request" });
+exports.updateComment = (commentID, voteInc, bodyLength) => {
+  if (bodyLength === 0) {
+    voteInc = 0;
   }
   return connection("comments")
     .where("comment_id", "=", commentID)

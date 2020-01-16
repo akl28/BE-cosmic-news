@@ -16,9 +16,9 @@ exports.selectArticleByArticleID = article_id => {
     });
 };
 
-exports.updateArticle = (articleID, voteInc) => {
-  if (!voteInc) {
-    return Promise.reject({ status: 400, msg: "Bad Request" });
+exports.updateArticle = (articleID, voteInc, bodyLength) => {
+  if (bodyLength === 0) {
+    voteInc = 0;
   }
   return connection("articles")
     .where("article_id", "=", articleID)
@@ -102,11 +102,3 @@ exports.selectArticles = (orderBy, sortBy, author, topic, method) => {
       }
     });
 };
-
-// Notes
-// const formattedArticles = [];
-// articles.forEach(article => {
-//   const articleCopy = { ...article };
-//   formattedArticles.push(articleCopy);
-//   delete articleCopy["body"];
-// });

@@ -19,11 +19,9 @@ exports.getArticleByArticleID = (req, res, next) => {
 exports.patchArticle = (req, res, next) => {
   const { article_id } = req.params;
   const { inc_votes } = req.body;
-  //console.log(req, "req <");
-  //  console.log(inc_votes, "<<<");
-  updateArticle(article_id, inc_votes)
+  const bodyLength = Object.keys(req.body).length;
+  updateArticle(article_id, inc_votes, bodyLength)
     .then(article => {
-      // console.log(article, "articless");
       res.status(200).send({ article });
     })
     .catch(next);
