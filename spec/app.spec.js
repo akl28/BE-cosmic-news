@@ -38,7 +38,7 @@ describe("app", () => {
           .post("/api/topics")
           .expect(405)
           .then(response => {
-            expect(response.body.msg).to.equal("Method not valid");
+            expect(response.body.msg).to.equal("Method Not Found");
           });
       });
       it("PUT: 405 responds with an error msg when given an inavlid method", () => {
@@ -46,7 +46,7 @@ describe("app", () => {
           .put("/api/topics")
           .expect(405)
           .then(response => {
-            expect(response.body.msg).to.equal("Method not valid");
+            expect(response.body.msg).to.equal("Method Not Found");
           });
       });
       it("PATCH: 405 responds with an error msg when given an inavlid method", () => {
@@ -54,7 +54,7 @@ describe("app", () => {
           .patch("/api/topics")
           .expect(405)
           .then(response => {
-            expect(response.body.msg).to.equal("Method not valid");
+            expect(response.body.msg).to.equal("Method Not Found");
           });
       });
       it("DELETE: 405 responds with an error msg when given an inavlid method", () => {
@@ -62,7 +62,7 @@ describe("app", () => {
           .delete("/api/topics")
           .expect(405)
           .then(response => {
-            expect(response.body.msg).to.equal("Method not valid");
+            expect(response.body.msg).to.equal("Method Not Found");
           });
       });
     });
@@ -72,7 +72,6 @@ describe("app", () => {
           .get("/api/users/icellusedkars")
           .expect(200)
           .then(response => {
-            //console.log(response.body.user, "response here <<");
             expect(response.body.user).to.eql({
               username: "icellusedkars",
               name: "sam",
@@ -90,6 +89,38 @@ describe("app", () => {
           .expect(404)
           .then(response => {
             expect(response.body.msg).to.equal("Username does not exist");
+          });
+      });
+      it("POST: 405 responds with an error msg when given an inavlid method", () => {
+        return request(app)
+          .post("/api/users/icellusedkars")
+          .expect(405)
+          .then(response => {
+            expect(response.body.msg).to.equal("Method Not Found");
+          });
+      });
+      it("PUT: 405 responds with an error msg when given an inavlid method", () => {
+        return request(app)
+          .put("/api/users/icellusedkars")
+          .expect(405)
+          .then(response => {
+            expect(response.body.msg).to.equal("Method Not Found");
+          });
+      });
+      it("PATCH: 405 responds with an error msg when given an inavlid method", () => {
+        return request(app)
+          .patch("/api/users/icellusedkars")
+          .expect(405)
+          .then(response => {
+            expect(response.body.msg).to.equal("Method Not Found");
+          });
+      });
+      it("DELETE: 405 responds with an error msg when given an inavlid method", () => {
+        return request(app)
+          .delete("/api/users/icellusedkars")
+          .expect(405)
+          .then(response => {
+            expect(response.body.msg).to.equal("Method Not Found");
           });
       });
     });
@@ -147,19 +178,15 @@ describe("app", () => {
             .expect(200)
             .send({ inc_votes: 22 }) // << body
             .then(response => {
-              // console.log(response.body, "***");
-              expect(response.body).to.eql({
-                article: [
-                  {
-                    article_id: 1,
-                    title: "Living in the shadow of a great man",
-                    topic: "mitch",
-                    author: "butter_bridge",
-                    body: "I find this existence challenging",
-                    created_at: "2018-11-15T12:21:54.171Z",
-                    votes: 122
-                  }
-                ]
+              // console.log(response.body.article, "***");
+              expect(response.body.article).to.eql({
+                article_id: 1,
+                title: "Living in the shadow of a great man",
+                topic: "mitch",
+                author: "butter_bridge",
+                body: "I find this existence challenging",
+                created_at: "2018-11-15T12:21:54.171Z",
+                votes: 122
               });
             });
         });
@@ -170,18 +197,14 @@ describe("app", () => {
             .send({ inc_votes: -25 }) // << body
             .then(response => {
               // console.log(response.body, "***");
-              expect(response.body).to.eql({
-                article: [
-                  {
-                    article_id: 1,
-                    title: "Living in the shadow of a great man",
-                    topic: "mitch",
-                    author: "butter_bridge",
-                    body: "I find this existence challenging",
-                    created_at: "2018-11-15T12:21:54.171Z",
-                    votes: 75
-                  }
-                ]
+              expect(response.body.article).to.eql({
+                article_id: 1,
+                title: "Living in the shadow of a great man",
+                topic: "mitch",
+                author: "butter_bridge",
+                body: "I find this existence challenging",
+                created_at: "2018-11-15T12:21:54.171Z",
+                votes: 75
               });
             });
         });
@@ -219,18 +242,14 @@ describe("app", () => {
             .expect(200)
             .send({})
             .then(response => {
-              expect(response.body).to.eql({
-                article: [
-                  {
-                    article_id: 1,
-                    title: "Living in the shadow of a great man",
-                    topic: "mitch",
-                    author: "butter_bridge",
-                    body: "I find this existence challenging",
-                    created_at: "2018-11-15T12:21:54.171Z",
-                    votes: 100
-                  }
-                ]
+              expect(response.body.article).to.eql({
+                article_id: 1,
+                title: "Living in the shadow of a great man",
+                topic: "mitch",
+                author: "butter_bridge",
+                body: "I find this existence challenging",
+                created_at: "2018-11-15T12:21:54.171Z",
+                votes: 100
               });
             });
         });
@@ -240,18 +259,14 @@ describe("app", () => {
             .expect(200)
             .send({ inc_votes: 22, name: "Mitch", blah: "Invalidproperty" })
             .then(response => {
-              expect(response.body).to.eql({
-                article: [
-                  {
-                    article_id: 1,
-                    title: "Living in the shadow of a great man",
-                    topic: "mitch",
-                    author: "butter_bridge",
-                    body: "I find this existence challenging",
-                    created_at: "2018-11-15T12:21:54.171Z",
-                    votes: 122
-                  }
-                ]
+              expect(response.body.article).to.eql({
+                article_id: 1,
+                title: "Living in the shadow of a great man",
+                topic: "mitch",
+                author: "butter_bridge",
+                body: "I find this existence challenging",
+                created_at: "2018-11-15T12:21:54.171Z",
+                votes: 122
               });
             });
         });
@@ -630,18 +645,14 @@ describe("app", () => {
         .expect(200)
         .send({ inc_votes: 50, name: "Mitch", blah: "Invalidproperty" })
         .then(response => {
-          expect(response.body).to.eql({
-            comment: [
-              {
-                comment_id: 3,
-                author: "icellusedkars",
-                article_id: 1,
-                votes: 150,
-                created_at: "2015-11-23T12:36:03.389Z",
-                body:
-                  "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works."
-              }
-            ]
+          expect(response.body.comment).to.eql({
+            comment_id: 3,
+            author: "icellusedkars",
+            article_id: 1,
+            votes: 150,
+            created_at: "2015-11-23T12:36:03.389Z",
+            body:
+              "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works."
           });
         });
     });
@@ -658,6 +669,30 @@ describe("app", () => {
           expect(response.body.msg).to.equal(
             "Comment does not exist, nothing deleted"
           );
+        });
+    });
+    it("POST: 405 responds with an error msg when given an inavlid method", () => {
+      return request(app)
+        .post("/api/comments/3")
+        .expect(405)
+        .then(response => {
+          expect(response.body.msg).to.equal("Method Not Found");
+        });
+    });
+    it("PUT: 405 responds with an error msg when given an inavlid method", () => {
+      return request(app)
+        .put("/api/comments/3")
+        .expect(405)
+        .then(response => {
+          expect(response.body.msg).to.equal("Method Not Found");
+        });
+    });
+    it("GET: 405 responds with an error msg when given an invalid method", () => {
+      return request(app)
+        .get("/api/comments/3")
+        .expect(405)
+        .then(response => {
+          expect(response.body.msg).to.equal("Method Not Found");
         });
     });
   });

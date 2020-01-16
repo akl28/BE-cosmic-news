@@ -24,8 +24,8 @@ exports.updateArticle = (articleID, voteInc, bodyLength) => {
     .where("article_id", "=", articleID)
     .increment("votes", voteInc)
     .returning("*")
-    .then(result => {
-      if (result.length === 0)
+    .then(([result]) => {
+      if (!result)
         return Promise.reject({ status: 404, msg: "Article does not exist" });
       return result;
     });
