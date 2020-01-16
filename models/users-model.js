@@ -6,8 +6,8 @@ exports.selectUserByUsername = username => {
     .select("*")
     .from("users")
     .where("username", "=", username)
-    .then(result => {
-      if (result.length === 0) {
+    .then(([result]) => {
+      if (!result) {
         return Promise.reject({ status: 404, msg: "Username does not exist" });
       }
       return result;

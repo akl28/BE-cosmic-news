@@ -9,8 +9,8 @@ exports.selectArticleByArticleID = article_id => {
     .leftJoin("comments", "articles.article_id", "=", "comments.article_id")
     .groupBy("articles.article_id")
     .where("articles.article_id", "=", article_id)
-    .then(result => {
-      if (result.length === 0)
+    .then(([result]) => {
+      if (!result)
         return Promise.reject({ status: 404, msg: "Article does not exist" });
       return result;
     });
@@ -38,7 +38,10 @@ exports.insertComment = (comment, articleID) => {
   delete formattedComment.username;
   return connection("comments")
     .insert(formattedComment)
-    .returning("*");
+    .returning("*")
+    .then(([result]) => {
+      return result;
+    });
 };
 
 exports.selectCommentsByArticleID = (articleID, query) => {

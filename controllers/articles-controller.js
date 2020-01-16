@@ -46,11 +46,11 @@ exports.getCommentsByArticleID = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  const { order_by } = req.query;
+  const { order } = req.query;
   const { sort_by } = req.query;
   const { author } = req.query;
   const { topic } = req.query;
-  selectArticles(order_by, sort_by, author, topic, req.method)
+  selectArticles(order, sort_by, author, topic, req.method)
     .then(articles => {
       res.status(200).send({ articles });
     })

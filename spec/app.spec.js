@@ -72,20 +72,16 @@ describe("app", () => {
           .get("/api/users/icellusedkars")
           .expect(200)
           .then(response => {
-            // console.log(response.body.user, "response here <<");
-            expect(response.body).to.eql({
-              user: [
-                {
-                  username: "icellusedkars",
-                  name: "sam",
-                  avatar_url:
-                    "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
-                }
-              ]
+            //console.log(response.body.user, "response here <<");
+            expect(response.body.user).to.eql({
+              username: "icellusedkars",
+              name: "sam",
+              avatar_url:
+                "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
             });
-            response.body.user.forEach(user1 => {
-              expect(user1).to.have.keys("username", "name", "avatar_url");
-            });
+            // response.body.user.forEach(user1 => {
+            //   expect(user1).to.have.keys("username", "name", "avatar_url");
+            // });
           });
       });
       it("GET: 404 sends an error message when given a valid but non-existent username", () => {
@@ -104,8 +100,9 @@ describe("app", () => {
             .get("/api/articles/1")
             .expect(200)
             .then(response => {
-              expect(response.body.article).to.be.an("array");
-              expect(response.body.article[0]).to.eql({
+              console.log(response.body.article, "***");
+              expect(response.body.article).to.be.an("object");
+              expect(response.body.article).to.eql({
                 article_id: 1,
                 title: "Living in the shadow of a great man",
                 body: "I find this existence challenging",
@@ -116,7 +113,7 @@ describe("app", () => {
                 comment_count: "13"
               });
 
-              expect(response.body.article[0]).to.have.keys(
+              expect(response.body.article).to.have.keys(
                 "author",
                 "title",
                 "article_id",
@@ -269,7 +266,7 @@ describe("app", () => {
               body: "The fluffy dog ate the banana"
             })
             .then(response => {
-              expect(response.body.comment[0]).to.have.keys(
+              expect(response.body.comment).to.have.keys(
                 "body",
                 "votes",
                 "created_at",
@@ -277,13 +274,12 @@ describe("app", () => {
                 "article_id",
                 "comment_id"
               );
-              expect(response.body.comment[0].body).to.equal(
+              expect(response.body.comment).to.be.an("object");
+              expect(response.body.comment.body).to.equal(
                 "The fluffy dog ate the banana"
               );
-              expect(response.body.comment[0]["article_id"]).to.equal(1);
-              expect(response.body.comment[0]["author"]).to.equal(
-                "butter_bridge"
-              );
+              expect(response.body.comment["article_id"]).to.equal(1);
+              expect(response.body.comment["author"]).to.equal("butter_bridge");
             });
         });
         it("POST: 400 when empty body is sent as a comment", () => {
@@ -450,7 +446,7 @@ describe("app", () => {
       });
       it("GET: 200 responds with an array of article objects and accepts an order_by query, which orders ascending & is sorted by date by default", () => {
         return request(app)
-          .get("/api/articles?order_by=asc")
+          .get("/api/articles?order=asc")
           .expect(200)
           .then(response => {
             //console.log(response.body, "res bpdy");
@@ -497,7 +493,7 @@ describe("app", () => {
       });
       it("GET: 200 responds with order as a default of descending if passed an invalid order by", () => {
         return request(app)
-          .get("/api/articles?order_by=upsidedown")
+          .get("/api/articles?order=upsidedown")
           .expect(200)
           .then(response => {
             //  console.log(response.body.comments);
@@ -549,19 +545,17 @@ describe("app", () => {
           .expect(200)
           .send({ inc_votes: 60 }) // << body
           .then(response => {
-            expect(response.body.comment[0].votes).to.equal(160);
-            expect(response.body).to.eql({
-              comment: [
-                {
-                  comment_id: 3,
-                  author: "icellusedkars",
-                  article_id: 1,
-                  votes: 160,
-                  created_at: "2015-11-23T12:36:03.389Z",
-                  body:
-                    "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works."
-                }
-              ]
+            // console.log(response.body.comment, "****<<");
+            expect(response.body).to.be.an("object");
+            expect(response.body.comment.votes).to.equal(160);
+            expect(response.body.comment).to.eql({
+              comment_id: 3,
+              author: "icellusedkars",
+              article_id: 1,
+              votes: 160,
+              created_at: "2015-11-23T12:36:03.389Z",
+              body:
+                "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works."
             });
           });
       });
@@ -571,19 +565,15 @@ describe("app", () => {
           .expect(200)
           .send({ inc_votes: -36 }) // << body
           .then(response => {
-            expect(response.body.comment[0].votes).to.equal(64);
-            expect(response.body).to.eql({
-              comment: [
-                {
-                  comment_id: 3,
-                  author: "icellusedkars",
-                  article_id: 1,
-                  votes: 64,
-                  created_at: "2015-11-23T12:36:03.389Z",
-                  body:
-                    "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works."
-                }
-              ]
+            expect(response.body.comment.votes).to.equal(64);
+            expect(response.body.comment).to.eql({
+              comment_id: 3,
+              author: "icellusedkars",
+              article_id: 1,
+              votes: 64,
+              created_at: "2015-11-23T12:36:03.389Z",
+              body:
+                "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works."
             });
           });
       });
@@ -620,19 +610,16 @@ describe("app", () => {
           .expect(200)
           .send({})
           .then(response => {
-            expect(response.body.comment[0].votes).to.equal(100);
-            expect(response.body).to.eql({
-              comment: [
-                {
-                  comment_id: 3,
-                  author: "icellusedkars",
-                  article_id: 1,
-                  votes: 100,
-                  created_at: "2015-11-23T12:36:03.389Z",
-                  body:
-                    "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works."
-                }
-              ]
+            // console.log(response.body.comment, "****<<");
+            expect(response.body.comment.votes).to.equal(100);
+            expect(response.body.comment).to.eql({
+              comment_id: 3,
+              author: "icellusedkars",
+              article_id: 1,
+              votes: 100,
+              created_at: "2015-11-23T12:36:03.389Z",
+              body:
+                "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works."
             });
           });
       });
