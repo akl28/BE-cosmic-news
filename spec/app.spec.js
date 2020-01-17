@@ -33,37 +33,20 @@ describe("app", () => {
             });
           });
       });
-      it("POST: 405 responds with an error msg when given an inavlid method", () => {
-        return request(app)
-          .post("/api/topics")
-          .expect(405)
-          .then(response => {
-            expect(response.body.msg).to.equal("Method Not Found");
+
+      describe("INVALID METHODS", () => {
+        it("status:405", () => {
+          const invalidMethods = ["patch", "put", "delete", "post"];
+          const methodPromises = invalidMethods.map(method => {
+            return request(app)
+              [method]("/api/topics")
+              .expect(405)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Method Not Found");
+              });
           });
-      });
-      it("PUT: 405 responds with an error msg when given an inavlid method", () => {
-        return request(app)
-          .put("/api/topics")
-          .expect(405)
-          .then(response => {
-            expect(response.body.msg).to.equal("Method Not Found");
-          });
-      });
-      it("PATCH: 405 responds with an error msg when given an inavlid method", () => {
-        return request(app)
-          .patch("/api/topics")
-          .expect(405)
-          .then(response => {
-            expect(response.body.msg).to.equal("Method Not Found");
-          });
-      });
-      it("DELETE: 405 responds with an error msg when given an inavlid method", () => {
-        return request(app)
-          .delete("/api/topics")
-          .expect(405)
-          .then(response => {
-            expect(response.body.msg).to.equal("Method Not Found");
-          });
+          return Promise.all(methodPromises);
+        });
       });
     });
     describe("/users", () => {
@@ -91,37 +74,20 @@ describe("app", () => {
             expect(response.body.msg).to.equal("Username does not exist");
           });
       });
-      it("POST: 405 responds with an error msg when given an inavlid method", () => {
-        return request(app)
-          .post("/api/users/icellusedkars")
-          .expect(405)
-          .then(response => {
-            expect(response.body.msg).to.equal("Method Not Found");
+
+      describe("INVALID METHODS", () => {
+        it("status:405", () => {
+          const invalidMethods = ["patch", "put", "delete", "post"];
+          const methodPromises = invalidMethods.map(method => {
+            return request(app)
+              [method]("/api/topics")
+              .expect(405)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Method Not Found");
+              });
           });
-      });
-      it("PUT: 405 responds with an error msg when given an inavlid method", () => {
-        return request(app)
-          .put("/api/users/icellusedkars")
-          .expect(405)
-          .then(response => {
-            expect(response.body.msg).to.equal("Method Not Found");
-          });
-      });
-      it("PATCH: 405 responds with an error msg when given an inavlid method", () => {
-        return request(app)
-          .patch("/api/users/icellusedkars")
-          .expect(405)
-          .then(response => {
-            expect(response.body.msg).to.equal("Method Not Found");
-          });
-      });
-      it("DELETE: 405 responds with an error msg when given an inavlid method", () => {
-        return request(app)
-          .delete("/api/users/icellusedkars")
-          .expect(405)
-          .then(response => {
-            expect(response.body.msg).to.equal("Method Not Found");
-          });
+          return Promise.all(methodPromises);
+        });
       });
     });
     describe("/articles", () => {
@@ -335,6 +301,15 @@ describe("app", () => {
               );
             });
         });
+        it("GET: 200 sends an empty array when given an ARTICLE that exists but does not have any comments", () => {
+          return request(app)
+            .get("/api/articles/12/comments")
+            .expect(200)
+            .then(response => {
+              expect(response.body.comments).to.be.an("array");
+              expect(response.body.comments).to.have.length(0);
+            });
+        });
         it("GET: 200 responds with an array of comments sorted by votes when passed a query in default descending order", () => {
           return request(app)
             .get("/api/articles/1/comments?sort_by=votes")
@@ -364,7 +339,7 @@ describe("app", () => {
             .get("/api/articles/10000/comments?sort_by=votes")
             .expect(404)
             .then(response => {
-              expect(response.body.msg).to.equal("Article ID does not exist");
+              expect(response.body.msg).to.equal("Does not exist");
             });
         });
         it("GET: 400 sends an error message when given an invalid article ID", () => {
@@ -403,7 +378,7 @@ describe("app", () => {
           .get("/api/articles")
           .expect(200)
           .then(response => {
-            //  console.log(response.body.articles);
+            //console.log(response.body.articles);
             expect(response.body.articles).to.be.an("array");
             expect(response.body.articles[0]).to.have.keys(
               "author",
@@ -416,37 +391,19 @@ describe("app", () => {
             );
           });
       });
-      it("POST: 405 responds with an error msg when given an inavlid method", () => {
-        return request(app)
-          .post("/api/articles")
-          .expect(405)
-          .then(response => {
-            expect(response.body.msg).to.equal("Method Not Found");
+      describe("INVALID METHODS", () => {
+        it("status:405", () => {
+          const invalidMethods = ["patch", "put", "delete", "post"];
+          const methodPromises = invalidMethods.map(method => {
+            return request(app)
+              [method]("/api/articles")
+              .expect(405)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal("Method Not Found");
+              });
           });
-      });
-      it("PUT: 405 responds with an error msg when given an inavlid method", () => {
-        return request(app)
-          .put("/api/articles")
-          .expect(405)
-          .then(response => {
-            expect(response.body.msg).to.equal("Method Not Found");
-          });
-      });
-      it("PATCH: 405 responds with an error msg when given an inavlid method", () => {
-        return request(app)
-          .patch("/api/articles")
-          .expect(405)
-          .then(response => {
-            expect(response.body.msg).to.equal("Method Not Found");
-          });
-      });
-      it("DELETE: 405 responds with an error msg when given an inavlid method", () => {
-        return request(app)
-          .delete("/api/articles")
-          .expect(405)
-          .then(response => {
-            expect(response.body.msg).to.equal("Method Not Found");
-          });
+          return Promise.all(methodPromises);
+        });
       });
       it("GET: 200 responds with an array of article objects and accepts a sort_by query which sorts by column, where the order defaults to descending", () => {
         return request(app)
@@ -671,29 +628,19 @@ describe("app", () => {
           );
         });
     });
-    it("POST: 405 responds with an error msg when given an inavlid method", () => {
-      return request(app)
-        .post("/api/comments/3")
-        .expect(405)
-        .then(response => {
-          expect(response.body.msg).to.equal("Method Not Found");
+    describe("INVALID METHODS", () => {
+      it("status:405", () => {
+        const invalidMethods = ["get", "put", "post"];
+        const methodPromises = invalidMethods.map(method => {
+          return request(app)
+            [method]("/api/comments/3")
+            .expect(405)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal("Method Not Found");
+            });
         });
-    });
-    it("PUT: 405 responds with an error msg when given an inavlid method", () => {
-      return request(app)
-        .put("/api/comments/3")
-        .expect(405)
-        .then(response => {
-          expect(response.body.msg).to.equal("Method Not Found");
-        });
-    });
-    it("GET: 405 responds with an error msg when given an invalid method", () => {
-      return request(app)
-        .get("/api/comments/3")
-        .expect(405)
-        .then(response => {
-          expect(response.body.msg).to.equal("Method Not Found");
-        });
+        return Promise.all(methodPromises);
+      });
     });
   });
 });

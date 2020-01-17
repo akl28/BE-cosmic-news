@@ -54,11 +54,8 @@ exports.selectCommentsByArticleID = (articleID, query) => {
     .where("article_id", "=", articleID)
     .orderBy(query.sort_by || "created_at", query.order_by || "desc")
     .then(result => {
-      if (result.length === 0) {
-        return Promise.reject({
-          status: 404,
-          msg: "Article ID does not exist"
-        });
+      if (result.length === 0 && articleID !== undefined) {
+        return checkExists(articleID, "articles", "article_id");
       }
       const formattedComments = [];
       result.forEach(comment => {
@@ -66,6 +63,7 @@ exports.selectCommentsByArticleID = (articleID, query) => {
         formattedComments.push(commentCopy);
         delete commentCopy["article_id"];
       });
+
       return formattedComments;
     });
 };
