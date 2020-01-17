@@ -366,12 +366,12 @@ describe("app", () => {
             });
         });
       });
+      // GET /api/articles
       it("GET: 200 responds with an array of article objects with a comment count property", () => {
         return request(app)
           .get("/api/articles")
           .expect(200)
           .then(response => {
-            //console.log(response.body.articles);
             expect(response.body.articles).to.be.an("array");
             expect(response.body.articles[0]).to.have.keys(
               "author",
@@ -398,6 +398,7 @@ describe("app", () => {
           return Promise.all(methodPromises);
         });
       });
+      xit("GET: 200 accepts a limit query which defaults to 10", () => {});
       it("GET: 200 responds with an array of article objects and accepts a sort_by query which sorts by column, where the order defaults to descending", () => {
         return request(app)
           .get("/api/articles?sort_by=title")
