@@ -44,13 +44,15 @@ exports.insertComment = (comment, articleID) => {
     });
 };
 
-exports.selectCommentsByArticleID = (articleID, query) => {
+exports.selectCommentsByArticleID = (articleID, query, limit, page) => {
   if (query.order !== "asc" && query.order !== "desc") {
     query.order = "desc";
   }
   return connection
     .select("*")
     .from("comments")
+    .limit(limit || 10)
+    .offset((page - 1) * limit || 0)
     .where("article_id", "=", articleID)
     .orderBy(query.sort_by || "created_at", query.order || "desc")
     .then(result => {
@@ -68,7 +70,7 @@ exports.selectCommentsByArticleID = (articleID, query) => {
     });
 };
 
-exports.selectArticles = (orderBy, sortBy, author, topic, limit) => {
+exports.selectArticles = (orderBy, sortBy, author, topic, limit, page) => {
   if (orderBy !== "asc" && orderBy !== "desc") {
     orderBy = "desc";
   }
@@ -83,6 +85,7 @@ exports.selectArticles = (orderBy, sortBy, author, topic, limit) => {
     )
     .from("articles")
     .limit(limit || 10)
+    .offset((page - 1) * limit || 0)
     .count({ comment_count: "comments.comment_id" })
     .leftJoin("comments", "articles.article_id", "=", "comments.article_id")
     .groupBy("articles.article_id")

@@ -273,7 +273,6 @@ describe("app", () => {
             .expect(404)
             .send({ username: 28, body: "hi" })
             .then(response => {
-              // console.log(response);
               expect(response.body.msg).to.equal(
                 "Bad Request: comment in wrong format"
               );
@@ -284,7 +283,6 @@ describe("app", () => {
             .get("/api/articles/9/comments")
             .expect(200)
             .then(response => {
-              // console.log(response.body.comments, "**");
               expect(response.body.comments).to.be.an("array");
               expect(response.body.comments[0]).to.have.keys(
                 "comment_id",
@@ -293,6 +291,25 @@ describe("app", () => {
                 "author",
                 "body"
               );
+            });
+        });
+        it("GET: 200 accepts a limit query which responds with the amount of comments to display - defaults to 10", () => {
+          return request(app)
+            .get("/api/articles/1/comments?limit=3")
+            .expect(200)
+            .then(response => {
+              expect(response.body.comments.length).to.equal(3);
+              expect(response.body.comments[0]["comment_id"]).to.equal(2);
+            });
+        });
+        it("GET: 200 accepts a p (offset) query which sets the first position to return from the results of the query - defaults to 0", () => {
+          return request(app)
+            .get("/api/articles/1/comments?limit=5&p=2")
+            .expect(200)
+            .then(response => {
+              expect(response.body.comments.length).to.equal(5);
+              expect(response.body.comments[0]["comment_id"]).to.equal(7);
+              expect(response.body.comments[4]["comment_id"]).to.equal(11);
             });
         });
         it("GET: 200 sends an empty array when given an ARTICLE that exists but does not have any comments", () => {
@@ -309,7 +326,6 @@ describe("app", () => {
             .get("/api/articles/1/comments?sort_by=votes")
             .expect(200)
             .then(response => {
-              // console.log(response.body.comments);
               expect(response.body.comments).to.be.an("array");
               expect(response.body.comments).to.be.sortedBy("votes", {
                 descending: true
@@ -358,7 +374,6 @@ describe("app", () => {
             .get("/api/articles/1/comments?order=blah")
             .expect(200)
             .then(response => {
-              //  console.log(response.body.comments);
               expect(response.body.comments).to.be.an("array");
               expect(response.body.comments).to.be.sortedBy("created_at", {
                 descending: true
@@ -398,12 +413,23 @@ describe("app", () => {
           return Promise.all(methodPromises);
         });
       });
-      it("GET: 200 accepts a limit query which defaults to 10", () => {
+      it("GET: 200 accepts a limit query which responds with the amount of articles to display - defaults to 10", () => {
         return request(app)
           .get("/api/articles?limit=2")
           .expect(200)
           .then(response => {
             expect(response.body.articles.length).to.equal(2);
+            expect(response.body.articles[0]["article_id"]).to.equal(1);
+          });
+      });
+      it("GET: 200 accepts a p (offset) query which sets the first position to return from the results of the query - defaults to 0", () => {
+        return request(app)
+          .get("/api/articles?limit=5&p=2")
+          .expect(200)
+          .then(response => {
+            expect(response.body.articles.length).to.equal(5);
+            expect(response.body.articles[0]["article_id"]).to.equal(6);
+            expect(response.body.articles[4]["article_id"]).to.equal(10);
           });
       });
       it("GET: 200 responds with an array of article objects and accepts a sort_by query which sorts by column, where the order defaults to descending", () => {

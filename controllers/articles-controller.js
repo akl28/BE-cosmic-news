@@ -38,7 +38,9 @@ exports.postComment = (req, res, next) => {
 exports.getCommentsByArticleID = (req, res, next) => {
   const { article_id } = req.params;
   const query = req.query;
-  selectCommentsByArticleID(article_id, query)
+  const { limit } = req.query;
+  const { p } = req.query;
+  selectCommentsByArticleID(article_id, query, limit, p)
     .then(comments => {
       res.status(200).send({ comments });
     })
@@ -51,7 +53,8 @@ exports.getArticles = (req, res, next) => {
   const { author } = req.query;
   const { topic } = req.query;
   const { limit } = req.query;
-  selectArticles(order, sort_by, author, topic, limit)
+  const { p } = req.query;
+  selectArticles(order, sort_by, author, topic, limit, p)
     .then(articles => {
       res.status(200).send({ articles });
     })
