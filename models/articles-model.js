@@ -68,7 +68,7 @@ exports.selectCommentsByArticleID = (articleID, query) => {
     });
 };
 
-exports.selectArticles = (orderBy, sortBy, author, topic) => {
+exports.selectArticles = (orderBy, sortBy, author, topic, limit) => {
   if (orderBy !== "asc" && orderBy !== "desc") {
     orderBy = "desc";
   }
@@ -82,6 +82,7 @@ exports.selectArticles = (orderBy, sortBy, author, topic) => {
       "articles.votes"
     )
     .from("articles")
+    .limit(limit || 10)
     .count({ comment_count: "comments.comment_id" })
     .leftJoin("comments", "articles.article_id", "=", "comments.article_id")
     .groupBy("articles.article_id")

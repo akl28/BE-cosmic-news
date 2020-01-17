@@ -398,13 +398,21 @@ describe("app", () => {
           return Promise.all(methodPromises);
         });
       });
-      xit("GET: 200 accepts a limit query which defaults to 10", () => {});
+      it("GET: 200 accepts a limit query which defaults to 10", () => {
+        return request(app)
+          .get("/api/articles?limit=2")
+          .expect(200)
+          .then(response => {
+            expect(response.body.articles.length).to.equal(2);
+          });
+      });
       it("GET: 200 responds with an array of article objects and accepts a sort_by query which sorts by column, where the order defaults to descending", () => {
         return request(app)
           .get("/api/articles?sort_by=title")
           .expect(200)
           .then(response => {
             expect(response.body.articles).to.be.an("array");
+            expect(response.body.articles.length).to.equal(10);
             expect(response.body.articles).to.be.sortedBy("title", {
               descending: true
             });
