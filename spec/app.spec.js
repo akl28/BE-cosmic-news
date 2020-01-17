@@ -26,7 +26,6 @@ describe("app", () => {
           .get("/api/topics")
           .expect(200)
           .then(response => {
-            // console.log(response.body, "response here <<");
             expect(response.body.topics).to.be.an("array");
             response.body.topics.forEach(topic => {
               expect(topic).to.have.keys("slug", "description");
@@ -97,7 +96,6 @@ describe("app", () => {
             .get("/api/articles/1")
             .expect(200)
             .then(response => {
-              console.log(response.body.article, "***");
               expect(response.body.article).to.be.an("object");
               expect(response.body.article).to.eql({
                 article_id: 1,
@@ -144,7 +142,6 @@ describe("app", () => {
             .expect(200)
             .send({ inc_votes: 22 }) // << body
             .then(response => {
-              // console.log(response.body.article, "***");
               expect(response.body.article).to.eql({
                 article_id: 1,
                 title: "Living in the shadow of a great man",
@@ -162,7 +159,6 @@ describe("app", () => {
             .expect(200)
             .send({ inc_votes: -25 }) // << body
             .then(response => {
-              // console.log(response.body, "***");
               expect(response.body.article).to.eql({
                 article_id: 1,
                 title: "Living in the shadow of a great man",
@@ -198,7 +194,6 @@ describe("app", () => {
             .expect(400)
             .send({ inc_votes: "cats" })
             .then(response => {
-              // console.log(response.body.msg, "***");
               expect(response.body.msg).to.equal("Bad Request");
             });
         });
@@ -269,7 +264,6 @@ describe("app", () => {
             .expect(400)
             .send({})
             .then(response => {
-              // console.log(response);
               expect(response.body.msg).to.equal("Bad Request: empty body");
             });
         });
@@ -514,7 +508,6 @@ describe("app", () => {
           .expect(200)
           .send({ inc_votes: 60 }) // << body
           .then(response => {
-            // console.log(response.body.comment, "****<<");
             expect(response.body).to.be.an("object");
             expect(response.body.comment.votes).to.equal(160);
             expect(response.body.comment).to.eql({
@@ -579,7 +572,6 @@ describe("app", () => {
           .expect(200)
           .send({})
           .then(response => {
-            // console.log(response.body.comment, "****<<");
             expect(response.body.comment.votes).to.equal(100);
             expect(response.body.comment).to.eql({
               comment_id: 3,
@@ -637,6 +629,17 @@ describe("app", () => {
             });
         });
         return Promise.all(methodPromises);
+      });
+    });
+    describe("/api", () => {
+      it("GET: 200, sends out the json api when requested", () => {
+        return request(app)
+          .get("/api/")
+          .expect(200)
+          .then(response => {
+            expect(response.body).to.be.an("object");
+            expect(response.body).to.contain.keys("GET /api");
+          });
       });
     });
   });
