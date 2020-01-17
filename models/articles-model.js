@@ -45,14 +45,14 @@ exports.insertComment = (comment, articleID) => {
 };
 
 exports.selectCommentsByArticleID = (articleID, query) => {
-  if (query.order_by !== "asc" && query.order_by !== "desc") {
-    query.order_by = "desc";
+  if (query.order !== "asc" && query.order !== "desc") {
+    query.order = "desc";
   }
   return connection
     .select("*")
     .from("comments")
     .where("article_id", "=", articleID)
-    .orderBy(query.sort_by || "created_at", query.order_by || "desc")
+    .orderBy(query.sort_by || "created_at", query.order || "desc")
     .then(result => {
       if (result.length === 0 && articleID !== undefined) {
         return checkExists(articleID, "articles", "article_id");

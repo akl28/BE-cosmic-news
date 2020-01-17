@@ -276,7 +276,7 @@ describe("app", () => {
         it("POST: 400 when comment is sent in wrong format", () => {
           return request(app)
             .post("/api/articles/1/comments")
-            .expect(400)
+            .expect(404)
             .send({ username: 28, body: "hi" })
             .then(response => {
               // console.log(response);
@@ -324,10 +324,9 @@ describe("app", () => {
         });
         it("GET: 200 responds with an array of comments in ascending order and sorted by 'created_at' as a default", () => {
           return request(app)
-            .get("/api/articles/1/comments?order_by=asc")
+            .get("/api/articles/1/comments?order=asc")
             .expect(200)
             .then(response => {
-              //  console.log(response.body.comments);
               expect(response.body.comments).to.be.an("array");
               expect(response.body.comments).to.be.sortedBy("created_at", {
                 descending: false
@@ -362,7 +361,7 @@ describe("app", () => {
         });
         it("GET: 200 responds with order in default of descending if passed an invalid order by", () => {
           return request(app)
-            .get("/api/articles/1/comments?order_by=blah")
+            .get("/api/articles/1/comments?order=blah")
             .expect(200)
             .then(response => {
               //  console.log(response.body.comments);
@@ -416,7 +415,7 @@ describe("app", () => {
             });
           });
       });
-      it("GET: 200 responds with an array of article objects and accepts an order_by query, which orders ascending & is sorted by date by default", () => {
+      it("GET: 200 responds with an array of article objects and accepts an order query, which orders ascending & is sorted by date by default", () => {
         return request(app)
           .get("/api/articles?order=asc")
           .expect(200)

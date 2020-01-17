@@ -9,7 +9,7 @@ exports.handlePsqlErrors = (err, req, res, next) => {
   const psqlErrorCodes = {
     "22P02": { msg: "Bad Request", status: 400 },
     "23502": { msg: "Bad Request: empty body", status: 400 },
-    "23503": { msg: "Bad Request: comment in wrong format", status: 400 },
+    "23503": { msg: "Bad Request: comment in wrong format", status: 404 },
     "42703": { msg: "Bad Request: Sort by column does not exist", status: 400 }
   };
   if (psqlErrorCodes[err.code])
