@@ -420,7 +420,6 @@ describe("app", () => {
           .get("/api/articles?order=asc")
           .expect(200)
           .then(response => {
-            //console.log(response.body, "res bpdy");
             expect(response.body.articles).to.be.an("array");
             expect(response.body.articles).to.be.sortedBy("created_at", {
               descending: false
@@ -432,7 +431,6 @@ describe("app", () => {
           .get("/api/articles?author=rogersop")
           .expect(200)
           .then(response => {
-            // console.log(response.body);
             expect(response.body.articles[0].author).to.equal("rogersop");
             expect(
               response.body.articles.every(

@@ -9,8 +9,6 @@ apiRouter.use("/topics", topicsRouter);
 apiRouter.use("/users", usersRouter);
 apiRouter.use("/articles", articlesRouter);
 apiRouter.use("/comments", commentsRouter);
-apiRouter.all(send405Error);
-
-// apiRouter.use('/*', funcForControllerToHandleErrors)
+apiRouter.all("/", send405Error);
 
 module.exports = apiRouter;
